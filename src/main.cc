@@ -49,7 +49,7 @@ int main(void) {
   auto say_hello = [](const HttpRequest& request) -> HttpResponse {
     HttpResponse response(HttpStatusCode::Ok);
     response.SetHeader("Content-Type", "text/plain");
-    response.SetContent("Hello, world\n");
+    response.SetContent("Hello world from Zaur\n");
     return response;
   };
   auto send_html = [](const HttpRequest& request) -> HttpResponse {
