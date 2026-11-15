@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 
 project(SimpleHttpServer
     DESCRIPTION "A simple web server that supports HTTP/1.1"
@@ -6,6 +6,7 @@ project(SimpleHttpServer
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
+find_package(CURL REQUIRED)
 
 include_directories(src)
 
@@ -16,6 +17,11 @@ add_executable(SimpleHttpServer
     ${SRC_DIR}/main.cc
     ${SRC_DIR}/http_server.cc
     ${SRC_DIR}/http_message.cc
+    ${SRC_DIR}/query_utils.cc
+    ${SRC_DIR}/weather_handler.cc
+    ${SRC_DIR}/weather_api.cc
+    ${SRC_DIR}/json.cc
+    ${SRC_DIR}/weather_parser.cc
 )
 
 add_executable(test_SimpleHttpServer
@@ -24,5 +30,5 @@ add_executable(test_SimpleHttpServer
     ${SRC_DIR}/http_message.cc
 )
 
-target_link_libraries(SimpleHttpServer PRIVATE Threads::Threads)
+target_link_libraries(SimpleHttpServer PRIVATE Threads::Threads CURL::libcurl)
 target_link_libraries(test_SimpleHttpServer PRIVATE Threads::Threads)

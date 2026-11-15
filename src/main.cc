@@ -8,10 +8,13 @@
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <unordered_map>
 
 #include "http_message.h"
 #include "http_server.h"
 #include "uri.h"
+#include "weather_handler.h"
+#include "weather_api.h"
 
 using simple_http_server::HttpMethod;
 using simple_http_server::HttpRequest;
@@ -68,8 +71,13 @@ int main(void) {
 
   server.RegisterHttpRequestHandler("/", HttpMethod::HEAD, say_hello);
   server.RegisterHttpRequestHandler("/", HttpMethod::GET, say_hello);
+
   server.RegisterHttpRequestHandler("/hello.html", HttpMethod::HEAD, send_html);
   server.RegisterHttpRequestHandler("/hello.html", HttpMethod::GET, send_html);
+
+  server.RegisterHttpRequestHandler("/api/weather", HttpMethod::HEAD, weather_handler::HandleWeatherRequest);
+  server.RegisterHttpRequestHandler("/api/weather", HttpMethod::GET, weather_handler::HandleWeatherRequest);
+
 
   try {
     // std::cout << "Setting new limits for file descriptor count.." <<
@@ -77,6 +85,7 @@ int main(void) {
 
     // std::cout << "Setting new limits for number of threads.." << std::endl;
     // ensure_enough_resource(RLIMIT_NPROC, 60000, 60000);
+    weather_api::CurlGlobal curl_global;
 
     std::cout << "Starting the web server.." << std::endl;
     server.Start();
