@@ -17,7 +17,9 @@ namespace simple_http_server {
 class Uri {
  public:
   Uri() = default;
-  explicit Uri(const std::string& path) : path_(path) { SetPathToLowercase(); }
+  explicit Uri(const std::string& path) {
+    SetPath(path);
+  }
   ~Uri() = default;
 
   inline bool operator<(const Uri& other) const { return path_ < other.path_; }
@@ -26,7 +28,16 @@ class Uri {
   }
 
   void SetPath(const std::string& path) {
-    path_ = std::move(path);
+    auto pos = path.find('?');
+
+    if (pos != std::string::npos) {
+      path_ = path.substr(0, pos);
+      query_ = path.substr(pos + 1);
+    } else {
+      path_ = path;
+      query_.clear();
+    }
+
     SetPathToLowercase();
   }
 
@@ -34,10 +45,13 @@ class Uri {
   std::string host() const { return host_; }
   std::uint16_t port() const { return port_; }
   std::string path() const { return path_; }
+  std::string query() const { return query_; }
 
  private:
-  // Only the path is supported for now
+  // Parses the request path and query string.
+  // Scheme, host and port are not parsed.
   std::string path_;
+  std::string query_;
   std::string scheme_;
   std::string host_;
   std::uint16_t port_;

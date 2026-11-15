@@ -235,10 +235,14 @@ void HttpServer::HandleHttpData(const EventData &raw_request,
   }
 
   // Set response to write to client
-  response_string =
-      to_string(http_response, http_request.method() != HttpMethod::HEAD);
-  memcpy(raw_response->buffer, response_string.c_str(), kMaxBufferSize);
-  raw_response->length = response_string.length();
+  response_string = to_string(http_response, http_request.method() != HttpMethod::HEAD);
+
+  if (response_string.size() > sizeof(raw_response->buffer)) {
+    throw std::runtime_error("HTTP response exceeds buffer capacity");
+  }
+
+  memcpy(raw_response->buffer, response_string.data(), response_string.size());
+  raw_response->length = response_string.size();
 }
 
 HttpResponse HttpServer::HandleHttpRequest(const HttpRequest &request) {

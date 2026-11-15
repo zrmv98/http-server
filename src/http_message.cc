@@ -136,7 +136,14 @@ std::string to_string(const HttpRequest& request) {
   std::ostringstream oss;
 
   oss << to_string(request.method()) << ' ';
-  oss << request.uri().path() << ' ';
+  oss << request.uri().path();
+
+  if (!request.uri().query().empty()) {
+    oss << '?' << request.uri().query() << ' ';
+  } else {
+    oss << ' ';
+  }
+
   oss << to_string(request.version()) << "\r\n";
   for (const auto& p : request.headers())
     oss << p.first << ": " << p.second << "\r\n";
